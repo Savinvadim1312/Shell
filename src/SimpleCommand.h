@@ -5,6 +5,15 @@
 #include <string>
 #include "IORedirect.h"
 
+inline std::string separator()
+{
+#ifdef _WIN32
+	return "\\";
+#else
+	return "/";
+#endif
+}
+
 /**
  * A command that is part of a pipeline.
  * Commands can be builtin (like cd or exit) or programs that should be executed.
@@ -30,8 +39,15 @@ class SimpleCommand {
 		void addIORedirect( int fd, IORedirect::Type t, std::string const &s ) {
 			redirects.emplace_back(fd, t, s);
 		}
+		char *const*vectorToCharArr(const std::vector<std::string> &cppStrings);
+		char *const*argumentsForProgramm();
 
 		void execute();
+		void executeExit();
+		void executeCD();
+		std::string getProgramPath();
+		void executeRunProgramm();
+		void handleRedirections();
 };
 
 
