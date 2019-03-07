@@ -53,7 +53,11 @@ void SimpleCommand::handleRedirections() {
 	//	redirections
 	for (auto &redirect : redirects){
 		int newDescr = -1;
-		if (redirect.getType() == IORedirect::OUTPUT){
+
+		if (redirect.getNewFile().c_str()[0] == '&')  {
+		    newDescr = redirect.getNewFile().c_str()[1] - '0';
+		}
+		else if (redirect.getType() == IORedirect::OUTPUT){
 			newDescr = open(redirect.getNewFile().c_str(), O_CREAT | O_WRONLY);
 		} else if (redirect.getType() == IORedirect::APPEND){
 			newDescr = open(redirect.getNewFile().c_str(), O_CREAT | O_WRONLY | O_APPEND);

@@ -60,9 +60,12 @@ void Pipeline::execute() {
                 close(pipeline[1]);
             }
 
-            int returnValue;
-            waitpid( cid, &returnValue, 0 );
-            std::cout << "Process X ended with status code " << returnValue << std::endl;
+            // we are waiting for the process to finish if it is not the last one, or if it is the last one and should be syncrounous
+            if (i != commands.size() - 1 || i == commands.size() - 1 && !async) {
+                int returnValue;
+                waitpid( cid, &returnValue, 0 );
+                std::cout << "Process X ended with status code " << returnValue << std::endl;
+            }
         }
 	}
 }
