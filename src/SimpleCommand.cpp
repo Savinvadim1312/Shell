@@ -67,6 +67,7 @@ void SimpleCommand::handleRedirections() {
 		}
 
 		dup2(newDescr, redirect.getOldFileDescriptor());
+		close(newDescr);
 	}
 }
 
@@ -111,22 +112,11 @@ void SimpleCommand::executeRunProgramm() {
 	if(program_path.empty()) {
 		return;
 	}
-	// fork
-	int cid = fork();
-	if (cid == 0) {
-		// then this is the new child process
-		handleRedirections();
-		execvp(const_cast<char *>(program_path.c_str()), argumentsForProgramm());
-	}
-	else if (cid > 0) {
-		// then this is the original parent process
-		int returnValue;
-		waitpid( cid, &returnValue, 0 );
-		std::cout << "Process " << command << " ended with status code " << returnValue << std::endl;
-	}
-	else {
-		printf("Error in fork(), no child created\n");
-	}
+
+    // then this is the new child process
+    handleRedirections();
+    execvp(const_cast<char *>(program_path.c_str()), argumentsForProgramm());
+
 }
 
 std::string SimpleCommand::getProgramPath() {
@@ -153,4 +143,8 @@ std::string SimpleCommand::getProgramPath() {
 	}
 
 	return program_path;
+}
+
+bool SimpleCommand::canBeForked() {
+    return command != "cd" && command != "exit";
 }

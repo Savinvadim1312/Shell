@@ -48,6 +48,7 @@ class SimpleCommand {
 		std::string getProgramPath();
 		void executeRunProgramm();
 		void handleRedirections();
+		bool canBeForked();
 };
 
 
